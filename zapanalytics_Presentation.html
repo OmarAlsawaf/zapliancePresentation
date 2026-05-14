@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZapAnalytics Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    html, body {
+      overflow:hidden;
+      font-family:'Inter', sans-serif;
+      background:#050816;
+      color:white;
+      cursor:pointer;
+    }
+
+    .presentation {
+      width:100vw;
+      height:100vh;
+      position:relative;
+    }
+
+    .slide {
+      position:absolute;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity 0.8s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg,rgba(5,8,22,0.4) 0%,transparent 100%);
+      overflow:hidden;
+    }
+
+    .slide.active {
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .background-grid {
+      position:absolute;
+      inset:0;
+      background-image:
+        linear-gradient(rgba(122,92,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,204,255,0.08) 1px, transparent 1px);
+      background-size:80px 80px;
+      opacity:0.3;
+      animation:grid 20s linear infinite;
+    }
+
+    .background-grid::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:radial-gradient(circle at 20% 50%, rgba(122,92,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0,204,255,0.08) 0%, transparent 50%);
+      pointer-events:none;
+    }
+
+    @keyframes grid { to { transform:translateY(80px); } }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .orb {
+      position:absolute;
+      border-radius:50%;
+      filter:blur(30px);
+      opacity:0.65;
+      animation:float 12s ease-in-out infinite;
+    }
+
+    .orb.one{width:320px;height:320px;background:rgba(0,204,255,0.4);top:5%;left:5%;}
+    .orb.two{width:400px;height:400px;background:rgba(122,92,255,0.35);bottom:10%;right:5%;animation-delay:2s;}
+    .orb.three{width:350px;height:350px;background:rgba(0,204,255,0.3);top:50%;left:80%;animation-delay:4s;}
+
+    @keyframes float{
+      0%{transform:translate(0,0);}
+      25%{transform:translate(30px,-30px);}
+      50%{transform:translate(0,-50px);}
+      75%{transform:translate(-30px,-30px);}
+      100%{transform:translate(0,0);}
+    }
+
+    /* SLIDE 1 */
+    .title{font-size:clamp(3.5rem,8vw,7rem);font-weight:800;
+      background:linear-gradient(90deg,#ffffff,#00d9ff,#ffffff);
+      background-size:200% 100%;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      animation:gradient-shift 3s ease infinite;
+      filter:brightness(1.1);}
+
+    .subtitle{font-size:1.4rem;opacity:0.85;margin-top:10px;}
+
+    .highlight-now{
+      background:linear-gradient(90deg,#fff,#7cd8ff);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;
+    }
+
+    .badge{
+      padding:10px 18px;
+      border:1px solid rgba(255,255,255,0.12);
+      border-radius:999px;
+      background:rgba(255,255,255,0.04);
+      color:#9adfff;
+      margin-bottom:30px;
+      display:inline-block;
+    }
+
+    /* SLIDE 2 */
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1.2fr;
+      gap:60px;
+      width:100%;
+      max-width:1300px;
+      padding:80px;
+      position:relative;
+      z-index:2;
+    }
+
+    .side-title{
+      font-size:3rem;
+      font-weight:800;
+      background:linear-gradient(90deg,#ffffff,#00d9ff,#7a5cff,#ffffff);
+      background-size:300% 100%;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      animation:gradient-shift 3s ease infinite;
+      filter:brightness(1.15);
+    }
+
+    .line{width:140px;height:4px;background:#00ccff;margin-top:20px;}
+
+    .card{
+      margin-bottom:16px;
+      padding:20px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      opacity:0;
+      transform:translateY(20px);
+      transition:0.6s;
+    }
+
+    .card.visible{opacity:1;transform:translateY(0);}
+
+    .row{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;justify-items:center;}
+    .arrow{text-align:center;color:#00ccff;opacity:0;font-size:2.4rem;font-weight:bold;width:100%;display:flex;justify-content:center;align-items:center;}
+    .to{opacity:0;}
+    .revealed .arrow,.revealed .to{opacity:1;}
+
+    /* SLIDE 3 */
+    .features{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+      justify-items:center;
+      position:relative;
+      z-index:2;
+    }
+
+    .feature:nth-child(4){
+      grid-column:1;
+    }
+
+    .feature:nth-child(5){
+      grid-column:3;
+    }
+
+    .feature{
+      width:100%;
+      max-width:280px;
+      padding:24px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(122,92,255,0.25);
+      opacity:0;
+      transform:translateY(20px);
+      transition:0.6s;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .feature::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:3px;
+      background:linear-gradient(90deg,#00ccff,#7c5cff);
+    }
+
+    .feature.visible{opacity:1;transform:translateY(0);}
+
+    .feature-title{
+      font-size:1.05rem;
+      font-weight:700;
+      color:#7cd8ff;
+      margin-bottom:10px;
+      margin-top:4px;
+    }
+
+    .feature-description{
+      font-size:0.85rem;
+      line-height:1.5;
+      color:rgba(255,255,255,0.8);
+    }
+
+    /* SLIDE 4 */
+    .slide4-container{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      width:100%;
+      max-width:1200px;
+      padding:40px 30px;
+      position:relative;
+      z-index:2;
+      gap:28px;
+    }
+
+    .slide4-title{
+      font-size:clamp(2rem,4vw,2.8rem);
+      font-weight:800;
+      background:linear-gradient(90deg,#ffffff,#00d9ff,#7a5cff,#ffffff);
+      background-size:300% 100%;
+      background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      animation:gradient-shift 3s ease infinite;
+      text-align:center;
+      filter:brightness(1.15);
+    }
+
+    .slide4-intro{
+      font-size:0.95rem;
+      color:rgba(255,255,255,0.75);
+      text-align:center;
+      max-width:800px;
+      line-height:1.6;
+    }
+
+    .features-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+      width:100%;
+      max-width:1100px;
+    }
+
+    .feature-card{
+      padding:18px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(122,92,255,0.25);
+      opacity:0;
+      transform:translateY(15px);
+      transition:0.6s;
+      display:flex;
+      flex-direction:column;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .feature-card::before{
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:2px;
+      background:linear-gradient(90deg,#00ccff,#7c5cff);
+    }
+
+    .feature-card.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .feature-icon{
+      font-size:1.6rem;
+      margin-bottom:8px;
+      margin-top:2px;
+    }
+
+    .feature-card-title{
+      font-size:0.9rem;
+      font-weight:700;
+      color:#7cd8ff;
+      margin-bottom:6px;
+    }
+
+    .feature-card-desc{
+      font-size:0.75rem;
+      line-height:1.4;
+      color:rgba(255,255,255,0.75);
+    }
+
+    .stats-section-label{
+      font-size:1.2rem;
+      font-weight:700;
+      color:rgba(255,255,255,0.9);
+      text-align:center;
+      margin-top:10px;
+      opacity:0;
+      transform:translateY(15px);
+      transition:0.6s;
+    }
+
+    .stats-section-label.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .stats-section{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:28px;
+      width:100%;
+      max-width:700px;
+      margin-top:10px;
+    }
+
+    .stat-box{
+      padding:28px;
+      border-radius:14px;
+      background:linear-gradient(135deg,rgba(122,92,255,0.15),rgba(0,204,255,0.08));
+      border:1px solid rgba(122,92,255,0.3);
+      text-align:center;
+      opacity:0;
+      transform:translateY(15px);
+      transition:0.6s;
+    }
+
+    .stat-box.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .stat-number{
+      font-size:clamp(2rem,6vw,2.8rem);
+      font-weight:800;
+      background:linear-gradient(90deg,#00ccff,#7c5cff);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      margin-bottom:8px;
+    }
+
+    .stat-label{
+      font-size:0.85rem;
+      color:rgba(255,255,255,0.8);
+      line-height:1.5;
+      font-weight:500;
+    }
+
+    /* SLIDE 5 */
+    .requirements-list{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .requirement-item{
+      padding:18px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      opacity:0;
+      transform:translateX(20px);
+      transition:0.6s;
+    }
+
+    .requirement-item.visible{
+      opacity:1;
+      transform:translateX(0);
+    }
+
+    .requirement-title{
+      font-size:0.95rem;
+      font-weight:700;
+      color:#7cd8ff;
+      margin-bottom:8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .requirement-title::before{
+      content:'';
+      display:inline-block;
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:linear-gradient(90deg,#00ccff,#7c5cff);
+      flex-shrink:0;
+    }
+
+    .requirement-text{
+      font-size:0.85rem;
+      color:rgba(255,255,255,0.75);
+      line-height:1.5;
+      margin-left:14px;
+    }
+
+    /* SLIDE 6 */
+    .architecture-subtitle{
+      font-size:1rem;
+      color:rgba(255,255,255,0.7);
+      margin-top:10px;
+      font-weight:500;
+      letter-spacing:0.5px;
+    }
+
+    .architecture-wrapper{
+      width:100%;
+      height:700px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      border:2px solid rgba(122,92,255,0.4);
+      border-radius:20px;
+      padding:15px;
+      background:rgba(255,255,255,0.03);
+      opacity:0;
+      transform:translateY(20px);
+      transition:0.8s ease;
+    }
+
+    .architecture-wrapper.visible{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .architecture-image{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      border-radius:12px;
+      mask-image:radial-gradient(ellipse 85% 85% at 50% 50%, black 0%, black 60%, transparent 100%);
+      -webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 50%, black 0%, black 60%, transparent 100%);
+    }
+
+    /* SLIDE 7 */
+    .security-list{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .security-item{
+      padding:18px;
+      border-radius:12px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(0,204,255,0.2);
+      opacity:0;
+      transform:translateX(20px);
+      transition:0.6s;
+    }
+
+    .security-item.visible{
+      opacity:1;
+      transform:translateX(0);
+    }
+
+    .security-title{
+      font-size:0.95rem;
+      font-weight:700;
+      color:#00ccff;
+      margin-bottom:8px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .security-title::before{
+      content:'🔒';
+      display:inline-block;
+      font-size:1rem;
+      flex-shrink:0;
+    }
+
+    .security-text{
+      font-size:0.85rem;
+      color:rgba(255,255,255,0.75);
+      line-height:1.5;
+      margin-left:28px;
+    }
+
+    /* SLIDE 8 */
+    .quote-title{
+      font-size:clamp(2.8rem,7vw,4.2rem);
+      font-weight:800;
+      background:linear-gradient(90deg,#ffffff,#00d9ff,#7a5cff,#ffffff);
+      background-size:300% 100%;
+      background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      animation:gradient-shift 3s ease infinite;
+      line-height:1.4;
+      max-width:1000px;
+      margin:0 auto;
+      filter:brightness(1.15);
+    }
+
+    .highlight-quote{
+      background:linear-gradient(90deg,#7cd8ff,#00ccff);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      font-style:italic;
+    }
+
+    .cta-section{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+      opacity:0;
+      transform:translateY(30px);
+      transition:1s ease;
+      animation:fadeInUp 1s ease 0.5s forwards;
+    }
+
+    @keyframes fadeInUp{
+      from{
+        opacity:0;
+        transform:translateY(30px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .cta-text{
+      font-size:1.3rem;
+      font-weight:700;
+      color:#7cd8ff;
+      letter-spacing:0.5px;
+    }
+
+    .qr-wrapper{
+      padding:20px;
+      border:2px solid rgba(122,92,255,0.3);
+      border-radius:16px;
+      background:rgba(255,255,255,0.05);
+      backdrop-filter:blur(10px);
+    }
+
+    .qr-code{
+      width:200px;
+      height:200px;
+      display:block;
+      border-radius:8px;
+    }
+
+    .qr-instruction{
+      font-size:1rem;
+      color:rgba(255,255,255,0.8);
+      font-weight:500;
+      margin-top:10px;
+    }
+
+    /* SLIDE 9 */
+    .closing-title{
+      font-size:clamp(3.5rem,8vw,7rem);
+      font-weight:800;
+      background:linear-gradient(90deg,#ffffff,#00d9ff,#7a5cff,#ffffff);
+      background-size:300% 100%;
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      animation:gradient-shift 3s ease infinite;
+      filter:brightness(1.15);
+    }
+
+    .closing-subtitle{
+      font-size:clamp(1.8rem,4vw,3rem);
+      color:rgba(255,255,255,0.8);
+      font-weight:600;
+      letter-spacing:1px;
+      opacity:0;
+      animation:fadeIn 1s ease 0.5s forwards;
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0;}
+      to{opacity:1;}
+    }
+
+    /* PROGRESS BAR */
+    .progress-container{
+      position:fixed;
+      bottom:0;
+      left:0;
+      width:100%;
+      height:8px;
+      background:rgba(0,0,0,0.3);
+      z-index:1000;
+      display:flex;
+      align-items:center;
+    }
+
+    .progress-bar{
+      height:100%;
+      background:linear-gradient(90deg,#00ccff,#7c5cff);
+      width:11.11%;
+      transition:width 0.6s ease;
+      box-shadow:0 0 20px rgba(0,204,255,0.5);
+    }
+
+    .progress-text{
+      position:fixed;
+      bottom:12px;
+      right:20px;
+      font-size:0.85rem;
+      color:rgba(255,255,255,0.7);
+      font-weight:500;
+      z-index:1001;
+      letter-spacing:0.5px;
+    }
+
+    #current-slide{
+      color:#00ccff;
+      font-weight:700;
+    }
+
+    /* SLIDE 6 - ARCHITECTURE BULLETS */
+    .arch-bullet-list{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      margin-top:20px;
+    }
+
+    .arch-bullet{
+      opacity:0;
+      transform:translateX(20px);
+      transition:0.6s;
+    }
+
+    .arch-bullet.visible{
+      opacity:1;
+      transform:translateX(0);
+    }
+
+    .arch-bullet-title{
+      font-size:0.9rem;
+      font-weight:700;
+      color:#7cd8ff;
+      margin-bottom:4px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .arch-bullet-title::before{
+      content:'•';
+      display:inline-block;
+      font-size:1.3rem;
+      color:#00ccff;
+      flex-shrink:0;
+      line-height:1;
+    }
+
+    .arch-bullet-text{
+      font-size:0.8rem;
+      color:rgba(255,255,255,0.75);
+      line-height:1.4;
+      margin-left:18px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="progress-container">
+  <div class="progress-bar"></div>
+  <div class="progress-text">Slide <span id="current-slide">1</span> of 9</div>
+</div>
+
+<div class="presentation">
+
+  <!-- SLIDE 1 -->
+  <section class="slide active" id="s1">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <div style="text-align:center;z-index:2;position:relative;">
+      <div class="badge">AI-Powered Internal Auditing</div>
+      <div class="title">ZapAnalytics</div>
+      <div class="subtitle">The new era of auditing is <span class="highlight-now">now</span></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section class="slide" id="s2">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="grid2">
+      <div style="position:relative;z-index:2;">
+        <div class="side-title">Why should companies consider AI auditing?</div>
+        <div class="line"></div>
+      </div>
+
+      <div>
+        <div class="card"><div class="row"><div>Diving Into Details</div><div class="arrow">→</div><div class="to">Seeing The Full Picture</div></div></div>
+        <div class="card"><div class="row"><div>Risk Of Failure</div><div class="arrow">→</div><div class="to">Opportunity Of Improvement</div></div></div>
+        <div class="card"><div class="row"><div>Facing Problems</div><div class="arrow">→</div><div class="to">Finding Solutions</div></div></div>
+        <div class="card"><div class="row"><div>Fear Of Unclarity</div><div class="arrow">→</div><div class="to">Advice With Certainty</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4 -->
+  <section class="slide" id="s4">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="slide4-container">
+      <div class="slide4-title">What is ZapAnalytics?</div>
+      <div class="slide4-intro">AI-powered analytics & automation suite for SAP financial data, transforming internal audit and compliance operations.</div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <div class="feature-card-title">Duplicate Payment Detection</div>
+          <div class="feature-card-desc">Automated scanning to flag duplicate invoices and payments</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <div class="feature-card-title">Cash Recovery & VAT Analysis</div>
+          <div class="feature-card-desc">Identify opportunities for VAT reclaims and overpayment recovery</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <div class="feature-card-title">Process Auditing</div>
+          <div class="feature-card-desc">360° process review dashboards with variance analysis and root-cause drill-down</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚨</div>
+          <div class="feature-card-title">Real-time Alerts & Dashboards</div>
+          <div class="feature-card-desc">Monitor KPIs and anomalies across SAP FI/CO, MM, SD, and more</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <div class="feature-card-title">Automation Workflows</div>
+          <div class="feature-card-desc">Auto-schedule follow-ups, generate audit reports, and more</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <div class="feature-card-title">Agentic AI Assistants</div>
+          <div class="feature-card-desc">Azure OpenAI-powered agent executing complex queries, read documents and answer business questions</div>
+        </div>
+      </div>
+
+      <div class="stats-section-label">Zapliance in Numbers</div>
+
+      <div class="stats-section">
+        <div class="stat-box">
+          <div class="stat-number">75%</div>
+          <div class="stat-label">Time Savings Through Our Methodology</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">99%</div>
+          <div class="stat-label">Faster Than Traditional Data Analytics</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5 -->
+  <section class="slide" id="s5">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="grid2">
+      <div style="position:relative;z-index:2;">
+        <div class="side-title">The Prerequisites</div>
+        <div class="line"></div>
+      </div>
+
+      <div style="position:relative;z-index:2;">
+        <div class="requirements-list">
+          <div class="requirement-item">
+            <div class="requirement-title">Clean & AI-Ready Data</div>
+            <div class="requirement-text">If your data isn't AI ready, that's your first use case — ZapAnalytics cleans and prepares it.</div>
+          </div>
+          <div class="requirement-item">
+            <div class="requirement-title">Linux-Based VM/Server</div>
+            <div class="requirement-text">With proper hardware requirements and firewall rules configured for your ZapHome setup.</div>
+          </div>
+          <div class="requirement-item">
+            <div class="requirement-title">Kubernetes & Docker</div>
+            <div class="requirement-text">ZapAnalytics and PostgreSQL database deployed using Docker containers.</div>
+          </div>
+          <div class="requirement-item">
+            <div class="requirement-title">SAP RFC User</div>
+            <div class="requirement-text">Prepare and configure RFC user credentials for SAP connectivity.</div>
+          </div>
+          <div class="requirement-item">
+            <div class="requirement-title">Power BI Desktop</div>
+            <div class="requirement-text">Install on end-user devices to create and view analytics reports.</div>
+          </div>
+          <div class="requirement-item">
+            <div class="requirement-title">Content Bundle</div>
+            <div class="requirement-text">Zapliance provides a prebuilt analytics package with data extraction, processing rules, and reporting logic — uploaded to create your project.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6 -->
+  <section class="slide" id="s6">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="grid2">
+      <div style="position:relative;z-index:2;">
+        <div class="side-title">Your use case</div>
+        <div class="line"></div>
+        <div class="architecture-subtitle">System architecture</div>
+
+        <div class="arch-bullet-list">
+          <div class="arch-bullet">
+            <div class="arch-bullet-title">Users & SAP</div>
+            <div class="arch-bullet-text">End users hit the system from outside Azure; the client's on-prem SAP connects separately via RFC calls (tRFC/qRFC/bgRFC) over ExpressRoute.</div>
+          </div>
+          <div class="arch-bullet">
+            <div class="arch-bullet-title">Entry point</div>
+            <div class="arch-bullet-text">Nginx proxy in Azure fronts all traffic and routes into the Kubernetes cluster.</div>
+          </div>
+          <div class="arch-bullet">
+            <div class="arch-bullet-title">Core app</div>
+            <div class="arch-bullet-text">ZapAnalytics runs in a Docker container inside K8s, with PostgreSQL alongside it as the database.</div>
+          </div>
+          <div class="arch-bullet">
+            <div class="arch-bullet-title">AI layer</div>
+            <div class="arch-bullet-text">ZapAnalytics integrates with an Agentic AI component backed by Azure OpenAI.</div>
+          </div>
+          <div class="arch-bullet">
+            <div class="arch-bullet-title">Reporting</div>
+            <div class="arch-bullet-text">Data flows out to Power BI for dashboards.</div>
+          </div>
+          <div class="arch-bullet">
+            <div class="arch-bullet-title">Pattern</div>
+            <div class="arch-bullet-text">Hybrid setup — on-prem SAP as source of data, Azure-hosted containerized ZapAnalytics with AI Agents, Power BI for consumption.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="position:relative;z-index:2;">
+        <div class="architecture-wrapper">
+          <img src="Screenshot 2026-05-13 191420.png" alt="System Architecture Diagram" class="architecture-image">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7 -->
+  <section class="slide" id="s7">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="grid2">
+      <div style="position:relative;z-index:2;">
+        <div class="side-title">Security & Data Privacy</div>
+        <div class="line"></div>
+      </div>
+
+      <div style="position:relative;z-index:2;">
+        <div class="security-list">
+          <div class="security-item">
+            <div class="security-title">On-Premises or in your cloud</div>
+            <div class="security-text">All data remains within the organization's infrastructure at all times, ensuring full control and maximum security. No processing at Zapliance.</div>
+          </div>
+          <div class="security-item">
+            <div class="security-title">Read-Only SAP Access</div>
+            <div class="security-text">ZapAnalytics accesses the SAP system for data extraction via RFC using read-only permissions — no accidental deletions.</div>
+          </div>
+          <div class="security-item">
+            <div class="security-title">Azure ExpressRoute Private Path between SAP and Azure</div>
+            <div class="security-text">Creates a private, non-internet path that securely carries SAP RFC traffic between on-premises and Azure.</div>
+          </div>
+          <div class="security-item">
+            <div class="security-title">NGINX gateway</div>
+            <div class="security-text">NGINX proxy server centralizes all browser traffic with SSL/TLS encryption, so one certificate securely protects all container access.</div>
+          </div>
+          <div class="security-item">
+            <div class="security-title">Information Security Management System (ISMS) Overview</div>
+            <div class="security-text">We run a strong ISMS that ensures consistent security and reliability across all operations and services.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8 -->
+  <section class="slide" id="s8">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div style="text-align:center;z-index:2;position:relative;display:flex;flex-direction:column;align-items:center;gap:40px;">
+      <div class="quote-title">The true risk of AI is not using it — or adapting to it too <span class="highlight-quote">late</span></div>
+
+      <div class="cta-section">
+        <div class="cta-text">Get in touch with Zapliace</div>
+        <div class="qr-wrapper">
+          <img src="qrCode.png" alt="QR Code to book appointment" class="qr-code">
+        </div>
+        <div class="qr-instruction">Scan to book an appointment</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9 -->
+  <section class="slide" id="s9">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div style="text-align:center;z-index:2;position:relative;display:flex;flex-direction:column;align-items:center;gap:30px;">
+      <div class="closing-title">Questions?</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3 -->
+  <section class="slide" id="s3">
+    <div class="background-grid"></div>
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+    <div class="orb three"></div>
+
+    <div class="grid2">
+      <div>
+        <div class="side-title">Standardized Procedures <span style="color:#00ccff;">VS</span> Agentic AI</div>
+        <div class="line"></div>
+      </div>
+
+      <div>
+        <div class="features">
+          <div class="feature">
+            <div class="feature-title">Autonomy</div>
+            <div class="feature-description">The system makes decisions independently or significantly influences human decisions.</div>
+          </div>
+          <div class="feature">
+            <div class="feature-title">Business Relevance</div>
+            <div class="feature-description">Its outputs affect real organizational outcomes, not just routine transaction processing.</div>
+          </div>
+          <div class="feature">
+            <div class="feature-title">Learning-Based</div>
+            <div class="feature-description">The way the machine makes decisions is not merely based on static rules (e.g. "if-then-else chaining").</div>
+          </div>
+          <div class="feature">
+            <div class="feature-title">Dynamic Adaptability</div>
+            <div class="feature-description">The system can continuously improve and adapt as new data is collected and retraining occurs.</div>
+          </div>
+          <div class="feature">
+            <div class="feature-title">Specificity</div>
+            <div class="feature-description">It is a customized AI solution tailored to a particular use case, not a generic off-the-shelf tool.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+let current=1;
+let stage=0;
+let cards=document.querySelectorAll('#s2 .card');
+let i=0;
+let allCardsRevealed=false;
+let allFeaturesRevealed=false;
+let allSlide4ElementsRevealed=false;
+let allRequirementsRevealed=false;
+let architectureRevealed=false;
+let allArchPointsRevealed=false;
+let allSecurityItemsRevealed=false;
+
+function showSlide(n){
+  document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  updateProgressBar(n);
+}
+
+function updateProgressBar(slideNum){
+  let progressPercentage=(slideNum/9)*100;
+  document.querySelector('.progress-bar').style.width=progressPercentage+'%';
+  document.getElementById('current-slide').textContent=slideNum;
+}
+
+function revealCards(){
+  if(i>=cards.length){
+    allCardsRevealed=true;
+    return;
+  }
+  let c=cards[i];
+  if(stage===0){c.classList.add('visible');stage=1;}
+  else{c.classList.add('revealed');i++;stage=0;}
+}
+
+function revealFeatures(){
+  let f=document.querySelectorAll('#s3 .feature');
+  let next=[...f].find(x=>!x.classList.contains('visible'));
+  if(next){
+    next.classList.add('visible');
+  }else{
+    allFeaturesRevealed=true;
+  }
+}
+
+function revealSlide4Elements(){
+  let cards=document.querySelectorAll('#s4 .feature-card');
+  let label=document.querySelector('#s4 .stats-section-label');
+  let stats=document.querySelectorAll('#s4 .stat-box');
+  let allElements=[...cards,label,...stats];
+  let next=allElements.find(x=>!x.classList.contains('visible'));
+  if(next){
+    next.classList.add('visible');
+  }else{
+    allSlide4ElementsRevealed=true;
+  }
+}
+
+function revealRequirements(){
+  let items=document.querySelectorAll('#s5 .requirement-item');
+  let next=[...items].find(x=>!x.classList.contains('visible'));
+  if(next){
+    next.classList.add('visible');
+  }else{
+    allRequirementsRevealed=true;
+  }
+}
+
+function revealArchitecture(){
+  let wrapper=document.querySelector('#s6 .architecture-wrapper');
+  let bullets=document.querySelectorAll('#s6 .arch-bullet');
+
+  if(!wrapper.classList.contains('visible')){
+    wrapper.classList.add('visible');
+  }else{
+    bullets.forEach(bullet=>bullet.classList.add('visible'));
+    allArchPointsRevealed=true;
+  }
+}
+
+function revealSecurityItems(){
+  let items=document.querySelectorAll('#s7 .security-item');
+  let next=[...items].find(x=>!x.classList.contains('visible'));
+  if(next){
+    next.classList.add('visible');
+  }else{
+    allSecurityItemsRevealed=true;
+  }
+}
+
+function handleNavigation(direction){
+  if(direction==='next'){
+    if(current===2){
+      if(allCardsRevealed){
+        allCardsRevealed=false;
+        current++;
+        showSlide(current);
+        return;
+      }
+      revealCards();
+      return;
+    }
+    if(current===3){
+      if(allFeaturesRevealed){
+        allFeaturesRevealed=false;
+        current++;
+        showSlide(current);
+        return;
+      }
+      revealFeatures();
+      return;
+    }
+    if(current===4){
+      if(allSlide4ElementsRevealed){
+        allSlide4ElementsRevealed=false;
+        current++;
+        showSlide(current);
+        return;
+      }
+      revealSlide4Elements();
+      return;
+    }
+    if(current===5){
+      if(allRequirementsRevealed){
+        allRequirementsRevealed=false;
+        current++;
+        showSlide(current);
+        return;
+      }
+      revealRequirements();
+      return;
+    }
+    if(current===6){
+      if(allArchPointsRevealed){
+        allArchPointsRevealed=false;
+        current++;
+        showSlide(current);
+        return;
+      }
+      revealArchitecture();
+      return;
+    }
+    if(current===7){
+      if(allSecurityItemsRevealed){
+        allSecurityItemsRevealed=false;
+        current++;
+        showSlide(current);
+        return;
+      }
+      revealSecurityItems();
+      return;
+    }
+    current++;
+    if(current>9)current=9;
+    showSlide(current);
+  }else if(direction==='prev'){
+    if(current>1){
+      current--;
+      showSlide(current);
+    }
+  }
+}
+
+document.addEventListener('click',()=>{
+  handleNavigation('next');
+});
+
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='ArrowRight')handleNavigation('next');
+  if(e.key==='ArrowLeft')handleNavigation('prev');
+});
+
+showSlide(1);
+</script>
+
+</body>
+</html>
